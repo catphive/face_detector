@@ -79,6 +79,11 @@ def second_third_bot(start, end):
     assert (end[1] - start[1]) % 3 == 0
     return (end[0],  start[1] + (2 * (end[1] - start[1]) / 3))
 
+def mid_mid(start, end):
+    assert (end[0] - start[0]) % 2 == 0
+    assert (end[1] - start[1]) % 2 == 0
+    return (start[0] + ((end[0] - start[0]) / 2),  start[1] + ((end[1] - start[1]) / 2))
+
 def feature_a(img, start, end):
     assert(start[0] < end[0])
     assert(start[1] + 1 < end[1])
@@ -114,6 +119,20 @@ def feature_c(img, start, end):
              + 2 * img[second_third_bot(start, end)]
              - img[end])
 
+def feature_d(img, start, end):
+    assert(start[0] + 1 < end[0])
+    assert(start[1] + 1 < end[1])
+
+    return (-img[start]
+             + 2 * img[mid_top(start, end)]
+             - img[right_top(start, end)]
+             + 2 * img[left_mid(start, end)]
+             - 4 * img[mid_mid(start, end)]
+             + 2 * img[right_mid(start, end)]
+             - img[left_bot(start, end)]
+             + 2 * img[mid_bot(start, end)]
+             - img[end])
+
 def all_windows(start, end):
     for start_row in xrange(start[0], end[0]):
         for start_col in xrange(start[1], end[1]):
@@ -131,6 +150,9 @@ def all_features(img, all_start, all_end):
 
         if (end[1] - start[1]) % 3 == 0:
             yield feature_c(img, start, end)
+
+        if (end[0] - start[0]) % 2 == 0 and (end[1] - start[1]) % 2 == 0:
+            yield feature_d(img, start, end)
 
 def list_img_features(img):
     return list(all_features(img, (0,0), img.shape))
