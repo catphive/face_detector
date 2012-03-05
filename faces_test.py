@@ -73,6 +73,20 @@ class TestCoordFuncs(unittest.TestCase):
         validate((0,0), (2,1), (1,1))
         validate((30,20), (36, 25), (33,25))
 
+    def test_mid_top(self):
+        def validate(in_start, in_end, out):
+            self.assertEqual(faces.first_third_top(in_start, in_end), out)
+
+        validate((0,0), (1,3), (0,1))
+        validate((30,20), (35, 26), (30,22))
+
+    def test_mid_top(self):
+        def validate(in_start, in_end, out):
+            self.assertEqual(faces.first_third_bot(in_start, in_end), out)
+
+        validate((0,0), (1,3), (1,1))
+        validate((30,20), (35, 26), (35,22))
+
 class TestFeatureA(unittest.TestCase):
     
     def validate(self, ar, start, end, output):
