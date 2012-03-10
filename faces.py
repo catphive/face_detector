@@ -171,7 +171,9 @@ def load_datum(path, label):
     ar = numpy.array(img, dtype=numpy.int64)
     integrate_image(ar)
     int_img = IntegratedImage(ar)
-    return Datum(path, list_img_features(int_img), label)
+    return Datum(path,
+                 numpy.array(list_img_features(int_img), dtype=numpy.int64),
+                 label)
 
 def load_data_dir(dir, label, data_out, max_load=5):
     for root, dirs, files in os.walk(dir):
@@ -187,7 +189,7 @@ class DatumEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Datum):
             return {"img_path": obj.img_path,
-                    "features": obj.features,
+                    "features": obj.features.tolist(),
                     "label": obj.label}
         elif isinstance(obj, numpy.int64):
             return long(obj)
@@ -198,7 +200,9 @@ def dump(obj, fp):
 
 def datum_decoder(dct):
     if "features" in dct:
-        return Datum(dct["img_path"], dct["features"], dct["label"])
+        return Datum(dct["img_path"],
+                     numpy.array(dct["features"], dtype=numpy.int64),
+                     dct["label"])
     return dct
 
 def load(fp):
