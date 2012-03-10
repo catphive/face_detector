@@ -1,3 +1,7 @@
+import os
+import fnmatch
+from os.path import join
+import json
 import Image
 import numpy
 
@@ -32,14 +36,6 @@ class IntegratedImage(object):
     @property
     def shape(self):
         return self.table.shape
-
-def load_img(path):
-    img = Image.open(path)
-    img = img.convert("L")
-    img = img.resize((24,24), Image.ANTIALIAS)
-    ar = numpy.array(img, dtype=numpy.int64)
-    integrate_image(ar)
-    return IntegratedImage(ar)
 
 def mid_top(start, end):
     assert (end[1] - start[1]) % 2 == 0
@@ -154,12 +150,57 @@ def all_features(img, all_start, all_end):
         if (end[0] - start[0]) % 2 == 0 and (end[1] - start[1]) % 2 == 0:
             yield feature_d(img, start, end)
 
-def list_img_features(img):
-    return list(all_features(img, (0,0), img.shape))
+def list_img_features(int_img):
+    return list(all_features(int_img, (0,0), int_img.shape))
 
-def main():
-    img = load_img("data/lfw_funneled/AJ_Cook/AJ_Cook_0001.jpg")
-    print len(list_img_features(img))
+class Datum(object):
+    
+    def __init__(self, img_path, features, label):
+        self.img_path = img_path
+        self.features = features
+        self.label = label
 
-if __name__ == "__main__":
-    main()
+    def __repr__(self):
+        return ("Datum(img_path=%s, features=%s..., label=%s)" %
+                (self.img_path, self.features[:5], self.label))
+
+def load_datum(path, label):
+    img = Image.open(path)
+    img = img.convert("L")
+    #img = img.resize((24,24), Image.ANTIALIAS)
+    ar = numpy.array(img, dtype=numpy.int64)
+    integrate_image(ar)
+    int_img = IntegratedImage(ar)
+    return Datum(path, list_img_features(int_img), label)
+
+def load_data_dir(dir, label, data_out, max_load=5):
+    for root, dirs, files in os.walk(dir):
+        for name in fnmatch.filter(files, "*.bmp"):
+            rel_path = join(root, name)
+            print "loading:", rel_path
+            data_out.append(load_datum(rel_path, label))
+            max_load -= 1
+            if not max_load:
+                break
+
+class DatumEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Datum):
+            return {"img_path": obj.img_path,
+                    "features": obj.features,
+                    "label": obj.label}
+        elif isinstance(obj, numpy.int64):
+            return long(obj)
+        return json.JSONEncoder.default(self, obj)
+
+def dump(obj, fp):
+    json.dump(obj, fp, cls=DatumEncoder)
+
+def datum_decoder(dct):
+    if "features" in dct:
+        return Datum(dct["img_path"], dct["features"], dct["label"])
+    return dct
+
+def load(fp):
+    return json.load(fp, object_hook=datum_decoder)
+
