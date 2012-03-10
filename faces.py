@@ -164,15 +164,18 @@ class Datum(object):
         return ("Datum(img_path=%s, features=%s..., label=%s)" %
                 (self.img_path, self.features[:5], self.label))
 
+def f_vec(features):
+    return numpy.array(features, dtype=numpy.int64)
+
 def load_datum(path, label):
     img = Image.open(path)
     img = img.convert("L")
     #img = img.resize((24,24), Image.ANTIALIAS)
-    ar = numpy.array(img, dtype=numpy.int64)
+    ar = f_vec(img)
     integrate_image(ar)
     int_img = IntegratedImage(ar)
     return Datum(path,
-                 numpy.array(list_img_features(int_img), dtype=numpy.int64),
+                 f_vec(list_img_features(int_img)),
                  label)
 
 def load_data_dir(dir, label, data_out, max_load=5):
@@ -191,8 +194,6 @@ class DatumEncoder(json.JSONEncoder):
             return {"img_path": obj.img_path,
                     "features": obj.features.tolist(),
                     "label": obj.label}
-        elif isinstance(obj, numpy.int64):
-            return long(obj)
         return json.JSONEncoder.default(self, obj)
 
 def dump(obj, fp):
@@ -201,7 +202,7 @@ def dump(obj, fp):
 def datum_decoder(dct):
     if "features" in dct:
         return Datum(dct["img_path"],
-                     numpy.array(dct["features"], dtype=numpy.int64),
+                     f_vec(dct["features"]),
                      dct["label"])
     return dct
 
