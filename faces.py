@@ -205,7 +205,6 @@ def load_data_dir(dir, label, feature_descriptors, data_out, max_load=5):
     for root, dirs, files in os.walk(dir):
         for name in fnmatch.filter(files, "*.bmp"):
             rel_path = join(root, name)
-            print "loading:", rel_path
             data_out.append(load_datum(rel_path, label, feature_descriptors))
             max_load -= 1
             if not max_load:
