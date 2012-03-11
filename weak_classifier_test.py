@@ -3,14 +3,23 @@ import numpy
 import faces
 import weak_classifier
 
+def norm_label(label):
+    if label == True:
+        return 1
+    elif label == False:
+        return -1
+    else:
+        assert label == 1 or label == -1
+        return label
+
 class TestBestThresh(unittest.TestCase):
 
     def validate(self, features, labels, weights, output):
         assert len(features) == len(labels) == len(weights)
         
         data = [faces.Datum(str(idx),
-                            faces.f_vec([features[idx]]),
-                            labels[idx])
+                            norm_label(labels[idx]),
+                            faces.f_vec([features[idx]]))
                 for idx in xrange(len(features))]
 
         self.assertEqual(weak_classifier.best_thresh(data, weights, 0),
@@ -52,8 +61,8 @@ class TestBestFeature(unittest.TestCase):
         assert len(feature_grid) == len(labels) == len(weights)
         
         data = [faces.Datum(str(idx),
-                            faces.f_vec(feature_grid[idx]),
-                            labels[idx])
+                            norm_label(labels[idx]),
+                            faces.f_vec(feature_grid[idx]))
                 for idx in xrange(len(feature_grid))]
 
         self.assertEqual(weak_classifier.best_feature(data, weights),
@@ -84,14 +93,6 @@ class TestBestFeature(unittest.TestCase):
                        [69, 100, -78],
                        [180, -17, 1]],
                       [False, True, False], [1,1,1], (1, 41.5, -1, 0))
-
-    # def test_full(self):
-    #     self.validate([[7, -75, 41, 125, -207],
-    #                    [69, 30, -78, -25, -209],
-    #                    [18, -17, 1, 27, -95]],
-    #                   [True,True,True],
-    #                   [1,1,1],
-    #                   (f_idx, thresh, parity, err))
 
 if __name__ == '__main__':
     unittest.main()

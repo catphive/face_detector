@@ -53,13 +53,13 @@ def best_thresh(data, weights, f_idx):
     s_neg[0] = 0
 
     for idx, (datum, weight) in enumerate(pairs):
-        if datum.label == True:
+        if datum.label == 1:
             t_pos += weight
             if idx + 1 < len(s_pos):
                 s_pos[idx + 1] = s_pos[idx] + pairs[idx][1]
                 s_neg[idx + 1] = s_neg[idx]
         else:
-            assert datum.label == False
+            assert datum.label == -1
             t_neg += weight
             if idx + 1 < len(s_neg):
                 s_neg[idx + 1] = s_neg[idx] + pairs[idx][1]
@@ -77,3 +77,28 @@ def best_feature(data, weights):
                                        key=lambda elem: elem[1][2])
 
     return (f_idx, thresh, parity, err)
+
+
+def train_classifier(data, weights):
+    f_idx, thresh, parity, err = best_feature(data, weights)
+    return WeakClassifier(f_idx, thresh, parity, err)
+
+class WeakClassifier(object):
+
+    def __init__(self, f_idx, thresh, parity, expected_err):
+        self.f_idx = f_idx
+        self.thresh = thresh
+        self.parity = parity
+        self.expected_err = expected_err
+        
+    def __repr__(self):
+        return ("WeakClassifier(%s, %s, %s, %s)" %
+                (self.f_idx, self.thresh, self.parity, self.expected_err))
+
+    def classify(self, data):
+        for datum in data:
+            if self.parity * datum.features[self.f_idx] < self.parity * self.thresh:
+                yield 1
+            else:
+                yield -1
+

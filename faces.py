@@ -18,6 +18,9 @@ def integrate_image(table):
                 table[r, c] -= table[r-1, c-1]
 
 class IntegratedImage(object):
+    """Provides Python Imaging Library style coordinates for the image
+    backed by a numpy array.
+    """
     def __init__(self, table):
         self.table = table
 
@@ -136,29 +139,50 @@ def all_windows(start, end):
                 for end_col in xrange(start_col + 1, end[1] + 1):
                     yield ((start_row, start_col), (end_row, end_col))
 
-def all_features(img, all_start, all_end):
+def all_feature_descriptors(all_start, all_end):
     for start, end in all_windows(all_start, all_end):
         if (end[1] - start[1]) % 2 == 0:
-            yield feature_a(img, start, end)
+            yield (feature_a, start, end)
+            #yield feature_a(img, start, end)
 
         if (end[0] - start[0]) % 2 == 0:
-            yield feature_b(img, start, end)
+            yield (feature_b, start, end)
+            #yield feature_b(img, start, end)
 
         if (end[1] - start[1]) % 3 == 0:
-            yield feature_c(img, start, end)
+            yield (feature_c, start, end)
+            #yield feature_c(img, start, end)
 
         if (end[0] - start[0]) % 2 == 0 and (end[1] - start[1]) % 2 == 0:
-            yield feature_d(img, start, end)
+            yield (feature_d, start, end)
+            #yield feature_d(img, start, end)
 
-def list_img_features(int_img):
-    return list(all_features(int_img, (0,0), int_img.shape))
+def list_feature_descriptors(shape):
+    return list(all_feature_descriptors((0,0), shape))
+
+class LazyFeatureVec(object):
+    def __init__(self, int_img, feature_descriptors):
+        self.int_img = int_img
+        self.feature_descriptors = feature_descriptors
+
+    def __getitem__(self, idx):
+        if isinstance(idx, slice):
+            return [feature_func(self.int_img, start, end)
+                    for feature_func, start, end in self.feature_descriptors[idx]]
+
+        feature_func, start, end = self.feature_descriptors[idx]
+        return feature_func(self.int_img, start, end)
+
+    def __len__(self):
+        return len(self.feature_descriptors)
 
 class Datum(object):
     
-    def __init__(self, img_path, features, label):
+    def __init__(self, img_path, label, features_vec):
+        assert label == 1 or label == -1
         self.img_path = img_path
-        self.features = features
         self.label = label
+        self.features = features_vec
 
     def __repr__(self):
         return ("Datum(img_path=%s, features=%s..., label=%s)" %
@@ -167,26 +191,28 @@ class Datum(object):
 def f_vec(features):
     return numpy.array(features, dtype=numpy.int64)
 
-def load_datum(path, label):
+def load_datum(path, label, feature_descriptors):
     img = Image.open(path)
     img = img.convert("L")
-    #img = img.resize((24,24), Image.ANTIALIAS)
     ar = f_vec(img)
     integrate_image(ar)
     int_img = IntegratedImage(ar)
     return Datum(path,
-                 f_vec(list_img_features(int_img)),
-                 label)
+                 label,
+                 LazyFeatureVec(int_img, feature_descriptors))
 
-def load_data_dir(dir, label, data_out, max_load=5):
+def load_data_dir(dir, label, feature_descriptors, data_out, max_load=5):
     for root, dirs, files in os.walk(dir):
         for name in fnmatch.filter(files, "*.bmp"):
             rel_path = join(root, name)
             print "loading:", rel_path
-            data_out.append(load_datum(rel_path, label))
+            data_out.append(load_datum(rel_path, label, feature_descriptors))
             max_load -= 1
             if not max_load:
                 break
+
+# Encoding and decoding logic is not currently used as I'm now lazily
+# calculating the feature vectors.
 
 class DatumEncoder(json.JSONEncoder):
     def default(self, obj):
