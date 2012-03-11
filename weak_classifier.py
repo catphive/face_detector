@@ -27,7 +27,9 @@ def thresh_helper(pairs, f_idx, t_pos, t_neg, s_pos, s_neg):
             cur_err = pos_parity_err
             cur_parity = 1
 
-        if err is None or cur_err < err:
+        if ((err is None or cur_err < err) and
+            (idx == 0 or
+             pairs[idx - 1][0].features[f_idx] != pairs[idx][0].features[f_idx])):
             err = cur_err
             parity = cur_parity
             if idx > 0:
@@ -67,7 +69,9 @@ def best_thresh(data, weights, f_idx):
 
 def best_feature(data, weights):
     """returns (feature_index, threshhold, parity, err)"""
-
+    assert data
+    assert len(data) == len(weights)
+    
     f_idx, (thresh, parity, err) = min(((f_idx, best_thresh(data, weights, f_idx))
                                         for f_idx in xrange(len(data[0].features))),
                                        key=lambda elem: elem[1][2])
