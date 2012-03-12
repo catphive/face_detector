@@ -22,6 +22,10 @@ def read_opts():
                       help=("Hold out this many elements for validation. " +
                             "Validation not performed if sample size not specified."),
                       type="int", default=10)
+    parser.add_option("-c", "--cbackend", action="store_true", dest="c_backend",
+                      help=("Use C++ backend for computing features rapidly. " +
+                            "To use this you must first compile the c_faces " +
+                            "module with the build.sh script."))
 
     (options, args) = parser.parse_args()
     return options
@@ -29,16 +33,25 @@ def read_opts():
 def classify(classifier, data):
     guesses = list(classifier.classify(data))
     num_errors = sum(guess != data[idx].label for idx, guess in enumerate(guesses))
-    print "%s error out of %s (%s%%)" % (num_errors, len(data), (num_errors / float(len(data))) * 100)
+    print "%d error out of %d (%s%%)" % (num_errors, len(data), (num_errors / float(len(data))) * 100)
+
+    false_positives = sum(guess != data[idx].label and guess == 1 for idx, guess in enumerate(guesses))
+    false_negatives = sum(guess != data[idx].label and guess == -1 for idx, guess in enumerate(guesses))
+
+    print "%d false positives" % false_positives
+    print "%d false negatives" % false_negatives
 
 def main():
     opts = read_opts()
+
+    if not opts.c_backend:
+        print "WARNING: training in pure python. Run with -c option to enable the (much faster) C++ backend"
     
     feature_descriptors = faces.list_feature_descriptors((16,16))
     data = []
     print "loading faces..."
-    faces.load_data_dir('Face16', 1, feature_descriptors, data, opts.num_faces)
-    faces.load_data_dir('Nonface16', -1, feature_descriptors, data, opts.num_other)
+    faces.load_data_dir('Face16', 1, feature_descriptors, data, opts.num_faces, opts.c_backend)
+    faces.load_data_dir('Nonface16', -1, feature_descriptors, data, opts.num_other, opts.c_backend)
 
     print "suffling..."
     random.shuffle(data)
@@ -62,6 +75,5 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
+    # import cProfile
+    # cProfile.run('main()', 'mainprof')

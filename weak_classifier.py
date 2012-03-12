@@ -1,8 +1,4 @@
-
-from itertools import (ifilter,
-                       ifilterfalse,
-                       islice,
-                       izip)
+from itertools import izip
 
 def interp(low, high):
     return low + (high - low) / 2.0

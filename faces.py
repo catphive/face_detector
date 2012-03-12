@@ -4,6 +4,14 @@ from os.path import join
 import json
 import Image
 import numpy
+import sys
+
+
+sys.path.append("c_faces")
+try:
+    import c_faces
+except ImportError:
+    c_faces = None
 
 def integrate_image(table):
     """Creates integral image/summed area table in place."""
@@ -132,6 +140,8 @@ def feature_d(img, start, end):
              + 2 * img[mid_bot(start, end)]
              - img[end])
 
+
+
 def all_windows(start, end):
     for start_row in xrange(start[0], end[0]):
         for start_col in xrange(start[1], end[1]):
@@ -142,36 +152,40 @@ def all_windows(start, end):
 def all_feature_descriptors(all_start, all_end):
     for start, end in all_windows(all_start, all_end):
         if (end[1] - start[1]) % 2 == 0:
-            yield (feature_a, start, end)
-            #yield feature_a(img, start, end)
+            yield (0, start, end)
 
         if (end[0] - start[0]) % 2 == 0:
-            yield (feature_b, start, end)
-            #yield feature_b(img, start, end)
+            yield (1, start, end)
 
         if (end[1] - start[1]) % 3 == 0:
-            yield (feature_c, start, end)
-            #yield feature_c(img, start, end)
+            yield (2, start, end)
 
         if (end[0] - start[0]) % 2 == 0 and (end[1] - start[1]) % 2 == 0:
-            yield (feature_d, start, end)
-            #yield feature_d(img, start, end)
+            yield (3, start, end)
 
 def list_feature_descriptors(shape):
     return list(all_feature_descriptors((0,0), shape))
 
+feature_func_tuple = (feature_a, feature_b, feature_c, feature_d)
+def select_feature(feature_idx, start, end, int_img):
+    return feature_func_tuple[feature_idx](int_img, start, end)
+
 class LazyFeatureVec(object):
-    def __init__(self, int_img, feature_descriptors):
+    def __init__(self, int_img, feature_descriptors, c_backend):
         self.int_img = int_img
         self.feature_descriptors = feature_descriptors
+        self.c_backend = c_backend
 
     def __getitem__(self, idx):
         if isinstance(idx, slice):
-            return [feature_func(self.int_img, start, end)
-                    for feature_func, start, end in self.feature_descriptors[idx]]
+            return [select_feature(feature_func_idx, start, end, self.int_img)
+                    for feature_func_idx, start, end in self.feature_descriptors[idx]]
 
-        feature_func, start, end = self.feature_descriptors[idx]
-        return feature_func(self.int_img, start, end)
+        feature_func_idx, start, end = self.feature_descriptors[idx]
+        if self.c_backend:
+            return c_faces.lazy_get_feature(feature_func_idx, start, end, self.int_img.table)
+        else:
+            return select_feature(feature_func_idx, start, end, self.int_img)
 
     def __len__(self):
         return len(self.feature_descriptors)
@@ -189,9 +203,9 @@ class Datum(object):
                 (self.img_path, self.features[:5], self.label))
 
 def f_vec(features):
-    return numpy.array(features, dtype=numpy.int64)
+    return numpy.array(features, dtype=numpy.int32)
 
-def load_datum(path, label, feature_descriptors):
+def load_datum(path, label, feature_descriptors, c_backend):
     img = Image.open(path)
     img = img.convert("L")
     ar = f_vec(img)
@@ -199,19 +213,26 @@ def load_datum(path, label, feature_descriptors):
     int_img = IntegratedImage(ar)
     return Datum(path,
                  label,
-                 LazyFeatureVec(int_img, feature_descriptors))
+                 LazyFeatureVec(int_img, feature_descriptors, c_backend))
 
-def load_data_dir(dir, label, feature_descriptors, data_out, max_load=5):
+def load_data_dir(dir, label, feature_descriptors, data_out, max_load=5, c_backend=False):
+    if c_faces is None and c_backend:
+        print ("C++ backend not found. Please compile the c_backend with " +
+               "build.sh or run without -c flag.")
+        exit(1)
+
     for root, dirs, files in os.walk(dir):
         for name in fnmatch.filter(files, "*.bmp"):
             rel_path = join(root, name)
-            data_out.append(load_datum(rel_path, label, feature_descriptors))
+            data_out.append(load_datum(rel_path, label, feature_descriptors, c_backend))
             max_load -= 1
             if not max_load:
                 break
 
 # Encoding and decoding logic is not currently used as I'm now lazily
 # calculating the feature vectors.
+# Maybe want to bring back something similar for 64 bit computers that can
+# handle multiple gigabytes of feature data in main memory at once...
 
 class DatumEncoder(json.JSONEncoder):
     def default(self, obj):
