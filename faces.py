@@ -1,7 +1,6 @@
 import os
 import fnmatch
 from os.path import join
-import json
 import Image
 import numpy
 import sys
@@ -229,29 +228,5 @@ def load_data_dir(dir, label, feature_descriptors, data_out, max_load=5, c_backe
             if not max_load:
                 break
 
-# Encoding and decoding logic is not currently used as I'm now lazily
-# calculating the feature vectors.
-# Maybe want to bring back something similar for 64 bit computers that can
-# handle multiple gigabytes of feature data in main memory at once...
 
-class DatumEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, Datum):
-            return {"img_path": obj.img_path,
-                    "features": obj.features.tolist(),
-                    "label": obj.label}
-        return json.JSONEncoder.default(self, obj)
-
-def dump(obj, fp):
-    json.dump(obj, fp, cls=DatumEncoder)
-
-def datum_decoder(dct):
-    if "features" in dct:
-        return Datum(dct["img_path"],
-                     f_vec(dct["features"]),
-                     dct["label"])
-    return dct
-
-def load(fp):
-    return json.load(fp, object_hook=datum_decoder)
 

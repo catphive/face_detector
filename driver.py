@@ -3,6 +3,7 @@ import random
 import faces
 import weak_classifier
 import boost
+import serializer
 
 def read_opts():
     parser = OptionParser()
@@ -26,6 +27,10 @@ def read_opts():
                       help=("Use C++ backend for computing features rapidly. " +
                             "To use this you must first compile the c_faces " +
                             "module with the build.sh script."))
+    parser.add_option("--load-classifier", dest="load_classifier",
+                      help="Read classifier from file instead of training it.", metavar="FILE")
+    parser.add_option("--save-classifier", dest="save_classifier",
+                      help="Write classifier to file after training.", metavar="FILE")
 
     (options, args) = parser.parse_args()
     return options
@@ -58,22 +63,34 @@ def main():
     if opts.sample_size:
         train_data = data[:opts.sample_size]
         validation_data = data[opts.sample_size : opts.sample_size + opts.validate_size]
+    elif opts.validate_size:
+        train_data = []
+        validation_data = data[:opts.validate_size]
     else:
         train_data = data
         validation_data = []
+        
+    if opts.load_classifier:
+        with open(opts.load_classifier) as in_file:
+            classifier = serializer.load(in_file)
+    else:
+        print "training boosted classifier..."
+        classifier = boost.train_classifier(train_data, opts.num_iterations)
+        print classifier
 
-    print "training boosted classifier..."
-    classifier = boost.train_classifier(train_data, opts.num_iterations)
-    print classifier
+    if train_data:
+        print "training error:"
+        classify(classifier, train_data)
 
-    print "training error:"
-    classify(classifier, train_data)
-
-    if opts.validate_size and validation_data:
+    if validation_data:
         print "validation error:"
         classify(classifier, validation_data)
 
+    if opts.save_classifier:
+        with open(opts.save_classifier, "w") as out_file:
+            serializer.dump(classifier, out_file)
+
 if __name__ == "__main__":
     main()
-    # import cProfile
-    # cProfile.run('main()', 'mainprof')
+    #import cProfile
+    #cProfile.run('main()', 'mainprof')
