@@ -1,0 +1,74 @@
+\documentclass{article}
+\title{Final Project: Face detector}
+\author{Brendan Miller}
+\date{March 12 2012}
+\usepackage{multirow,amsmath}
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+\usepackage{color}
+\usepackage{amsfonts}
+\usepackage{hyperref}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A face detector implemented via a simplified Viola Jones algorithm.
+\end{abstract}
+
+\section{Project Overview}
+
+For this project I implemented an binary image classifier that selects
+faces from non-faces. This is based on the work of Paul Viola and
+Michael Jones\cite{violajones2001}.
+
+In the original Viola Jones paper, features were extracted from images
+by first generating what they termed an integrated image. From the
+integrated image, a large number of real valued features, described more fully in
+the next section, could be computed quickly.
+
+Given a large set of real valued features, a weak learner is
+constructed by selecting a single feature and a threshhold value for
+the feature that partitions example images into face and non-face
+classes. This weak learner is conceptually similar to a decision tree
+stump, although the metric used to find the optimal feature and
+threashhold is different.
+
+The weak learner is discussed more fully in section \ref{sec:weaklearner}.
+
+Weak learners are combined with boosting (see section
+\ref{sec:boosting}) in order to increase accuracy.
+
+Finally, in the original Viola Jones paper, boosted classifiers were
+combined in a cascade. The cascade was designed to reduce the
+incendence of false positives, and to increase the performance of the
+final classifer and possibly of the training phase. For my project I
+have ommitted the cascade, as I said I would in my original project
+proposal.
+
+Even without the cascade, I've managed to achieve very high accuracy,
+upwards of 99\%\footnote{Note this is on a validation set selected
+  from the images provided with the project. I would expect accuracy
+  to drop on images from a less carefully curated source.}, using a
+boosted classifier over the features described in the original Viola
+Jones paper.
+
+\section{Feature Extraction}
+
+\section{Weak Learner}
+\label{sec:weaklearner}
+
+\section{Boosted Classifier}
+\label{sec:boosting}
+
+\section{Experimental Results}
+
+\begin{thebibliography}{9}
+
+\bibitem{violajones2001}
+  Paul Viola, Michael Jones\\
+  Rapid Object Detection using a Boosted Cascade of Simple Features\\
+  \url{http://research.microsoft.com/en-us/um/people/viola/Pubs/Detect/violaJones_CVPR2001.pdf}
+
+\end{thebibliography}
+
+\end{document}
