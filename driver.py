@@ -22,7 +22,7 @@ def read_opts():
     parser.add_option("-v", "--nvalidate", dest="validate_size",
                       help=("Hold out this many elements for validation. " +
                             "Validation not performed if sample size not specified."),
-                      type="int", default=10)
+                      type="int", default=None)
     parser.add_option("-c", "--cbackend", action="store_true", dest="c_backend",
                       help=("Use C++ backend for computing features rapidly. " +
                             "To use this you must first compile the c_faces " +
