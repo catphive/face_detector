@@ -54,6 +54,55 @@ Jones paper.
 
 \section{Feature Extraction}
 
+\begin{figure}
+\includegraphics[width=40mm]{features.png}
+\caption{Image features used to train the weak learner.}
+\label{fig:features}
+\end{figure}
+
+The underlying features used to train the weak classifier are
+illustrated in figure \ref{fig:features}\footnote{image from
+  wikipedia}. These rectangular features are computed by summing
+values of the pixels under the greyed out section, and subtracting the
+sum of the pixels under the white section to produce a real valued
+feature. For each feature type, a feature for every possible scale and
+translation over the image are computed.
+
+Rapid computation of these features probably the most important
+innovation in Viola Jones. As discussed in the Viola Jones
+2001\cite{violajones2001}, other detectors provide similar levels of
+accuracy, but Viola Jones provides greatly improved performance.
+
+To rapidly classify images, and also to provide more reasonable
+training speeds, the features discussed in this paper can be quickly
+computed by first creating an integral image. The integral image is of
+the same dimension of the source image, but every element of the
+integral image is the sum of all pixels above and to the left of that
+coordinate in the source image.
+
+From this integral image, the sum of a rectangular area can be
+computer with only 4 array references, one to each corner of the
+rectangle. A little algebra will similarly allow features A, B, C, and
+D to be computed with a small number of references.
+
+Even using the integrated image, the performance of feature
+computation can be a drag on the algorithm. Especially in training on
+large datasets, when millions of features need to be computed, it is
+extremely important that feature computation is fast. For this reason,
+after finding my initial pure python implementation to be too slow, I
+rewrote the feature extraction code in C++, which made training go about 5 times as fast.
+
+Another optimization that benefits the speed of training, but not of
+classification, is to precompute all features and store them in main
+memory. Originally I implemented my training stage this way, but found
+that on large datasets the number of precomputed features was too
+large to fit in main memory on a 32 bit machine.
+
+For a 16 by 16 image, in my implementation there are 26944
+features. Given 6000 training examples and 4 bytes per feature,
+roughly 154 gigabytes of memory are necessary to precompute all the
+features. Currently this is not practical.
+
 \section{Weak Learner}
 \label{sec:weaklearner}
 
@@ -61,6 +110,11 @@ Jones paper.
 \label{sec:boosting}
 
 \section{Experimental Results}
+
+\section{Future Directions}
+
+Training of weak learners is fairly parallelizable using fork join
+parallelism. 
 
 \begin{thebibliography}{9}
 
