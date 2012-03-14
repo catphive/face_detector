@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[11pt,twocolumn]{article}
 \title{Final Project: Face detector}
 \author{Brendan Miller}
 \date{March 12 2012}
@@ -9,31 +9,32 @@
 \usepackage{amsfonts}
 \usepackage{hyperref}
 \begin{document}
+\twocolumn[
+\begin{@twocolumnfalse}
 \maketitle
-
 \begin{abstract}
 A face detector implemented via a simplified Viola Jones algorithm.
 \end{abstract}
+\end{@twocolumnfalse}
+]
 
 \section{Project Overview}
 
-For this project I implemented an binary image classifier that selects
-faces from non-faces. This is based on the work of Paul Viola and
-Michael Jones\cite{violajones2001}.
+For this project I implemented an binary image classifier that detects
+faces. This is based on the work of Paul Viola and Michael
+Jones\cite{violajones2001}.
 
-In the original Viola Jones paper, features were extracted from images
-by first generating what they termed an integrated image. From the
-integrated image, a large number of real valued features, described more fully in
-the next section, could be computed quickly.
+Features are extracted from images by first generating what they
+termed Viola and Jones termed an integrated image. From the integrated
+image, a large number of real valued features, described more fully in
+the section \ref{sec:features} are rapidly computed.
 
 Given a large set of real valued features, a weak learner is
-constructed by selecting a single feature and a threshhold value for
-the feature that partitions example images into face and non-face
-classes. This weak learner is conceptually similar to a decision tree
-stump, although the metric used to find the optimal feature and
-threashhold is different.
-
-The weak learner is discussed more fully in section \ref{sec:weaklearner}.
+constructed by selecting a single feature and a threshhold value that
+partitions example images into guessed face and non-face classes. This
+weak learner is conceptually similar to a decision tree stump,
+although the metric used to find the optimal feature and threshold
+is different (see section \ref{sec:weaklearner}).
 
 Weak learners are combined with boosting (see section
 \ref{sec:boosting}) in order to increase accuracy.
@@ -53,16 +54,16 @@ boosted classifier over the features described in the original Viola
 Jones paper.
 
 \section{Feature Extraction}
+\label{sec:features}
 
 \begin{figure}
 \includegraphics[width=40mm]{features.png}
-\caption{Image features used to train the weak learner.}
+\caption{Image features used to train the weak learner. Image from wikipedia.}
 \label{fig:features}
 \end{figure}
 
 The underlying features used to train the weak classifier are
-illustrated in figure \ref{fig:features}\footnote{image from
-  wikipedia}. These rectangular features are computed by summing
+illustrated in figure \ref{fig:features}. These rectangular features are computed by summing
 values of the pixels under the greyed out section, and subtracting the
 sum of the pixels under the white section to produce a real valued
 feature. For each feature type, a feature for every possible scale and
@@ -70,7 +71,7 @@ translation over the image are computed.
 
 Rapid computation of these features probably the most important
 innovation in Viola Jones. As discussed in the Viola Jones
-2001\cite{violajones2001}, other detectors provide similar levels of
+algorithm\cite{violajones2001}, other detectors provide similar levels of
 accuracy, but Viola Jones provides greatly improved performance.
 
 To rapidly classify images, and also to provide more reasonable
@@ -90,7 +91,8 @@ computation can be a drag on the algorithm. Especially in training on
 large datasets, when millions of features need to be computed, it is
 extremely important that feature computation is fast. For this reason,
 after finding my initial pure python implementation to be too slow, I
-rewrote the feature extraction code in C++, which made training go about 5 times as fast.
+rewrote the feature extraction code in C++, which made training go
+about 5 times faster.
 
 Another optimization that benefits the speed of training, but not of
 classification, is to precompute all features and store them in main
@@ -105,6 +107,37 @@ features. Currently this is not practical.
 
 \section{Weak Learner}
 \label{sec:weaklearner}
+
+The weak learner used in the Viola Jones algorithm is very similar to
+a stump decision tree classifier. The primary difference is that while
+a stump classifier chooses a partition that maximizes weighted
+information gain, the weak learner minimizes weighted
+misclassification error.
+
+\begin{align*}
+  w_i = \mbox{weight of example $i$}\\
+  h(x) = \mbox{weak learner classifier}\\
+  \sum_i w_i |h(x_i) - y_i|
+\end{align*}
+
+This metric is important for performance reasons.
+
+If for each feature we consider all threshold mid way between the
+unique values of the feature in sorted order, then for $n$ feature and
+$m$ examples there are $n (m - 1)$ feature threshold combinations.
+
+Sorting the examples by each of the features in turn takes $O(n m
+\log(m))$ time. For each feature, given the examples sorted according
+to that feature, the threshold that minimizes weighted
+misclassification can be found in linear time, which is dominated by
+the $O(m \log(m)$ used to sort, thus $O(n m \log(m))$ is the total
+time to find the optimal weak learner.
+
+Comparatively, calculating the information gain of an individual
+partition is a linear time operation with respect to the number of
+examples $m$. Since that operation needs to be performed $m - 1$ times
+for each of the $n$ features, training a weak classifier using
+information gain as a metric would take $O(n m^2)$ time.
 
 \section{Boosted Classifier}
 \label{sec:boosting}
