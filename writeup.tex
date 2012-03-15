@@ -123,26 +123,63 @@ misclassification error.
 This metric is important for performance reasons.
 
 If for each feature we consider all threshold mid way between the
-unique values of the feature in sorted order, then for $n$ feature and
-$m$ examples there are $n (m - 1)$ feature threshold combinations.
+unique values of the feature in sorted order, then for $K$ features and
+$N$ examples there are $K (N - 1)$ feature threshold combinations.
 
 Sorting the examples by each of the features in turn takes $O(n m
-\log(m))$ time. For each feature, given the examples sorted according
-to that feature, the threshold that minimizes weighted
-misclassification can be found in linear time, which is dominated by
-the $O(m \log(m)$ used to sort, thus $O(n m \log(m))$ is the total
-time to find the optimal weak learner.
+\log(m))$ time.
+
+For each feature assuming the examples are already sorted, the
+threshold that minimizes weighted misclassification can be found in
+linear time with respect to $N$ using a simple algorithm described in
+Robust Real Time Face Detection\cite{violajones2004}. Finding the
+minimal misclassification threshold for each $K$ features is thus a
+$O(N K)$ operation.
+
+TODO: current implementation does this in $O(K N \log(N))$ make a note
+of that or fix it.
 
 Comparatively, calculating the information gain of an individual
 partition is a linear time operation with respect to the number of
-examples $m$. Since that operation needs to be performed $m - 1$ times
-for each of the $n$ features, training a weak classifier using
+examples $N$. Since that operation needs to be performed $N - 1$ times
+for each of the $K$ features, training a weak classifier using
 information gain as a metric would take $O(n m^2)$ time.
 
 \section{Boosted Classifier}
 \label{sec:boosting}
 
+The weak learners are combined in a fairly standard boosting algorithm
+as described by Schapire\cite{schapire2001}.
+
+TODO: fill this out or remove the section.
+
 \section{Experimental Results}
+
+My training data\cite{trainingdata} is provided with my project and consists of 3000
+images of faces and 10000 images of non-faces. All are 16 X 16
+grayscale images.
+
+Using 50 rounds of boosting and 5000 randomly selected training
+images, I produced a classifier\footnote{This classifier is serialized
+  as JSON in the file large\_classifier.json.}  that accurately
+classifies faces over a validation set of 1000 images with 0.7\%
+error. It produced 5 false positives and 2 false negatives.
+
+Classification by this classifier is relatively rapid. Once the
+integrated images have been generated, classification of 6000 images
+took place in 1180 milliseconds using the C++ backend\footnote{By
+  comparison the python backend took 9615 milliseconds.}. Thus it
+takes about 0.2 milliseconds to classify an image. Note that in
+practice the classifier would be run many times over a single image at
+different scales and translations in order to detect faces at
+different locations.
+
+\begin{figure}
+\includegraphics[width=60mm]{pct_err.png}
+\caption{Percent error over 6000 images given rounds of boosting.}
+\label{fig:bootingiter}
+\end{figure}
+
 
 \section{Future Directions}
 
@@ -156,6 +193,22 @@ parallelism.
   Rapid Object Detection using a Boosted Cascade of Simple Features\\
   \url{http://research.microsoft.com/en-us/um/people/viola/Pubs/Detect/violaJones_CVPR2001.pdf}
 
+\bibitem{violajones2004}
+  Paul Viola, Michael Jones\\
+  Robust Real Time Face Detection\\
+  \url{http://www.vision.caltech.edu/html-files/EE148-2005-Spring/pprs/viola04ijcv.pdf}
+
+\bibitem{schapire2001}
+  Robert E. Schapire\\
+  The Boosting Approach to Machine Learning: An Overview\\
+  \url{http://www.cs.princeton.edu/~schapire/uncompress-papers.cgi/msri.ps}
+
+\bibitem{trainingdata}
+  Training data used for my project\\
+  \url{http://www.stat.ucla.edu/~yuille/courses/Stat231-Fall08/}
+
 \end{thebibliography}
+
+
 
 \end{document}

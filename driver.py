@@ -4,6 +4,14 @@ import faces
 import weak_classifier
 import boost
 import serializer
+import time
+
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+except ImportError:
+    pass
+
 
 def read_opts():
     parser = OptionParser()
@@ -28,23 +36,87 @@ def read_opts():
                             "To use this you must first compile the c_faces " +
                             "module with the build.sh script."))
     parser.add_option("--load-classifier", dest="load_classifier",
-                      help="Read classifier from file instead of training it.", metavar="FILE")
+                      help="Read classifier from file instead of training it.",
+                      metavar="FILE")
     parser.add_option("--save-classifier", dest="save_classifier",
                       help="Write classifier to file after training.", metavar="FILE")
+    parser.add_option("--each-iter", action="store_true", dest="each_iter",
+                      help=("Show validation accuracy after each iteration of " +
+                            "boosting, rather than just the final classifier. "))
+    parser.add_option("--save-plot-iters", action="store_true", dest="plot_iters",
+                      help=("Used in conjunction with --each-iter. Requires matplotlib."))
+    parser.add_option("--save-plot-top-features", action="store_true", dest="plot_features",
+                      help=("Saves visual representation of best features. Requires matplotlib."))
 
     (options, args) = parser.parse_args()
     return options
 
 def classify(classifier, data):
+    t1 = time.time()
     guesses = list(classifier.classify(data))
+    t2 = time.time()
     num_errors = sum(guess != data[idx].label for idx, guess in enumerate(guesses))
-    print "%d error out of %d (%s%%)" % (num_errors, len(data), (num_errors / float(len(data))) * 100)
+    pct_err = (num_errors / float(len(data))) * 100
+    print "%d error out of %d (%s%%)" % (num_errors, len(data), pct_err)
 
     false_positives = sum(guess != data[idx].label and guess == 1 for idx, guess in enumerate(guesses))
     false_negatives = sum(guess != data[idx].label and guess == -1 for idx, guess in enumerate(guesses))
 
     print "%d false positives" % false_positives
     print "%d false negatives" % false_negatives
+    print 'classification took %0.3f ms' % ((t2-t1) * 1000.0)
+
+    return (pct_err, false_positives, false_negatives)
+
+def plot_perf(perf_data):    
+    import matplotlib.pyplot as plt
+
+    xs = range(len(perf_data))
+    pct_errs = [p[0] for p in perf_data]
+    false_positives = [p[1] for p in perf_data]
+    false_negatives = [p[2] for p in perf_data]
+
+    plt.plot(xs, pct_errs)
+    plt.ylabel("% error")
+    plt.xlabel("# iterations")
+    plt.savefig("pct_err.png")
+
+    plt.clf()
+    plt.cla()
+
+    plt.plot(xs, false_positives)
+    plt.ylabel("# false positives")
+    plt.xlabel("# iterations")
+    plt.savefig("false_positives.png")
+
+    plt.clf()
+    plt.cla()
+
+    plt.plot(xs, false_negatives)
+    plt.ylabel("# false negatives")
+    plt.xlabel("# iterations")
+    plt.savefig("false_negatives.png")
+
+    plt.clf()
+    plt.cla()
+
+def plot_features(classifier, feature_descriptors):
+    for base_h in classifier.base_h[:4]:
+        print feature_descriptors[base_h.f_idx]
+
+def classify_with_all_iterations(classifier, data, do_plot):
+    results = []
+    for iters in xrange(classifier.iterations + 1):
+        print "boosted classifier after %d iterations:" % iters
+        # Reconstruct classifier at earlier iterations.
+        cls = boost.BoostClassifier(base_h=classifier.base_h[:iters],
+                                    alpha=classifier.alpha[:iters],
+                                    iterations=iters)
+
+        results.append(classify(cls, data))
+    
+    if do_plot:
+        plot_perf(results)
 
 def main():
     opts = read_opts()
@@ -84,7 +156,13 @@ def main():
 
     if validation_data:
         print "validation error:"
-        classify(classifier, validation_data)
+        if opts.each_iter:
+            classify_with_all_iterations(classifier, validation_data, opts.plot_iters)
+        else:
+            classify(classifier, validation_data)
+
+    if opts.plot_features:
+        plot_features(classifier, feature_descriptors)
 
     if opts.save_classifier:
         with open(opts.save_classifier, "w") as out_file:

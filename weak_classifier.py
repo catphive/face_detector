@@ -39,6 +39,11 @@ def thresh_helper(pairs, f_idx, t_pos, t_neg, s_pos, s_neg):
 def best_thresh(data, weights, f_idx):
     assert data
     assert len(data) == len(weights)
+    # Sorting should really be performed ahead of time once for each
+    # feature.  Currently this makes the complete boosting algorithm
+    # O(M K N log (N)) when it should be O(M K N). Profiling suggests
+    # this isn't as big of a deal as you might think as in practice
+    # quicksort performs closer linear time.
     pairs = sorted(izip(data, weights), key=lambda pair: pair[0].features[f_idx])
     t_pos = 0
     t_neg = 0
