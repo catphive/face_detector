@@ -30,7 +30,7 @@ computer a large number of real valued features, described more fully
 in section \ref{sec:features}.
 
 Given a large set of real valued features, I constructed a weak
-learner by selecting a single feature and a threshhold value that
+learner by selecting a single feature and a threshold value that
 partitioned example images into guessed face and non-face classes. This
 weak learner is conceptually similar to a decision tree stump,
 although the metric used to find the optimal feature and threshold is
@@ -42,7 +42,7 @@ I combined weak learners using boosting (see section
 Finally, in the original Viola Jones paper, boosted classifiers were
 combined in a cascade. The cascade was designed to reduce the
 incidence of false positives, and to increase the performance of the
-final classifer and possibly of the training phase. However, as stated
+final classifier and possibly of the training phase. However, as stated
 in my original project proposal, I have decided to descope the cascade
 from this project in order to fit it into the time allotted.
 
@@ -63,7 +63,7 @@ Jones paper.
 
 The underlying features used to train the weak classifier are
 illustrated in figure \ref{fig:features}. These rectangular features
-are computed by summing values of the pixels under the greyed out
+are computed by summing values of the pixels under the grayed out
 section, and subtracting the sum of the pixels under the white section
 to produce a real valued feature. For each feature type, every
 possible scale and translation of the feature over the image is
@@ -202,7 +202,7 @@ Thus even without the cascade described in the Viola Jones paper,
 it's possible to build a very good face classifier of whole
 images. However, in order to detect faces within a larger image, it's
 necessary to run the classifier many thousands of times at different
-locations and scales. In this scenerio, 4 false positives out of 1000
+locations and scales. In this scenario, 4 false positives out of 1000
 is actually too high. See figure \ref{fig:searchfalsepositives}.
 
 \begin{figure}
