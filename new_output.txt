@@ -1,0 +1,316 @@
+python driver.py -c -f 3000 -o 3000 -s 5000 -v 1000 -i 50 --each-iter --save-plot-iters  --save-classifier new_classifier.json 
+loading faces...
+suffling...
+training boosted classifier...
+alpha = 0.907644983319
+alpha = 0.727924633593
+alpha = 0.676623035015
+alpha = 0.582427437231
+alpha = 0.566641242438
+alpha = 0.494280705726
+alpha = 0.518132392411
+alpha = 0.527024124408
+alpha = 0.48061424834
+alpha = 0.457780293177
+alpha = 0.452144054054
+alpha = 0.408401924408
+alpha = 0.431658655924
+alpha = 0.530153291364
+alpha = 0.450635959432
+alpha = 0.430892137474
+alpha = 0.488291472107
+alpha = 0.398486147538
+alpha = 0.507571326547
+alpha = 0.395985201142
+alpha = 0.377267180957
+alpha = 0.502021382293
+alpha = 0.397638817497
+alpha = 0.401784205308
+alpha = 0.418858001013
+alpha = 0.381343019863
+alpha = 0.385443749667
+alpha = 0.41842247428
+alpha = 0.452305135296
+alpha = 0.405257591693
+alpha = 0.373111035747
+alpha = 0.367265534295
+alpha = 0.403111602794
+alpha = 0.386760997101
+alpha = 0.375880734195
+alpha = 0.380798213789
+alpha = 0.352039785094
+alpha = 0.370396516693
+alpha = 0.359789333331
+alpha = 0.375133164675
+alpha = 0.368670169446
+alpha = 0.400881962132
+alpha = 0.360252181097
+alpha = 0.361602244828
+alpha = 0.325402274872
+alpha = 0.40967283648
+alpha = 0.401424993012
+alpha = 0.348488838973
+alpha = 0.4197705292
+alpha = 0.353568384187
+BoostClassifier(base_h=[WeakClassifier(16043, -161.5, 1, 0.14), WeakClassifier(2057, -31.5, 1, 0.189102990033), WeakClassifier(7232, 235.5, -1, 0.205340185746), WeakClassifier(418, 19.5, -1, 0.237786248697), WeakClassifier(19591, -13.5, 1, 0.243555838784), WeakClassifier(11970, -572.5, -1, 0.271196319451), WeakClassifier(23627, -112.5, 1, 0.261871348927), WeakClassifier(8156, 79.5, -1, 0.258448483971), WeakClassifier(116, 25.5, -1, 0.276632296806), WeakClassifier(13929, 45.5, -1, 0.285863318315), WeakClassifier(16731, -17.5, 1, 0.288170087586), WeakClassifier(8188, 20.5, -1, 0.30644253495), WeakClassifier(26430, 150.0, -1, 0.296646730411), WeakClassifier(22878, -5.5, 1, 0.257250870699), WeakClassifier(17464, 6.5, -1, 0.288789187805), WeakClassifier(11396, 35.5, -1, 0.296966694333), WeakClassifier(18813, 39.5, -1, 0.273570328135), WeakClassifier(24689, -214.5, 1, 0.310673546556), WeakClassifier(7524, 53.5, -1, 0.265974632082), WeakClassifier(3216, -3.5, 1, 0.311745742502), WeakClassifier(359, -2630.5, -1, 0.319834089826), WeakClassifier(4788, -3054.5, -1, 0.268147308484), WeakClassifier(2954, -7.5, 1, 0.311036583714), WeakClassifier(11659, 60.5, -1, 0.309262719157), WeakClassifier(24109, 2.5, -1, 0.30201603831), WeakClassifier(12950, -49.5, 1, 0.318063382202), WeakClassifier(2720, -105.5, -1, 0.316287153612), WeakClassifier(16438, -286.5, 1, 0.302199690088), WeakClassifier(13492, -25.5, 1, 0.288104007522), WeakClassifier(22045, -12.5, -1, 0.307780724108), WeakClassifier(20013, 2.5, -1, 0.321645049168), WeakClassifier(13849, 23.5, -1, 0.324201204229), WeakClassifier(21501, 7.5, -1, 0.308695891098), WeakClassifier(9047, -10.5, 1, 0.315717721106), WeakClassifier(23623, -51.5, 1, 0.320437606881), WeakClassifier(7470, 0.5, -1, 0.318299764897), WeakClassifier(7246, 13.5, -1, 0.330908356034), WeakClassifier(22212, -6.5, 1, 0.322830753541), WeakClassifier(15384, 21.5, -1, 0.327485770152), WeakClassifier(17764, -0.5, 1, 0.320763271762), WeakClassifier(6593, -24.5, 1, 0.323586011988), WeakClassifier(5105, 24.5, -1, 0.309648324864), WeakClassifier(24823, -22.5, 1, 0.327281928609), WeakClassifier(22772, 3.5, -1, 0.326687723158), WeakClassifier(18144, -12.5, 1, 0.34280825679), WeakClassifier(8553, 253.5, -1, 0.305902573011), WeakClassifier(19950, -430.5, -1, 0.309416209535), WeakClassifier(11394, 90.5, -1, 0.332482655819), WeakClassifier(13129, 18.5, -1, 0.301631451206), WeakClassifier(10646, -2.5, 1, 0.330231818111)], alpha=[0.9076449833191165, 0.7279246335933954, 0.6766230350145304, 0.5824274372314624, 0.5666412424383765, 0.4942807057264746, 0.5181323924113468, 0.5270241244080894, 0.4806142483400467, 0.45778029317716906, 0.4521440540536123, 0.4084019244083443, 0.43165865592378144, 0.5301532913637016, 0.45063595943211976, 0.43089213747434124, 0.48829147210702833, 0.39848614753785916, 0.5075713265473487, 0.39598520114201485, 0.37726718095673445, 0.5020213822934017, 0.39763881749702223, 0.40178420530842274, 0.41885800101290394, 0.38134301986264146, 0.3854437496665839, 0.41842247427982604, 0.45230513529622607, 0.40525759169286624, 0.3731110357472649, 0.36726553429470105, 0.4031116027937096, 0.38676099710057465, 0.3758807341946634, 0.3807982137885255, 0.35203978509389355, 0.37039651669323626, 0.3597893333309005, 0.37513316467504143, 0.3686701694463551, 0.40088196213208543, 0.36025218109697305, 0.3616022448282162, 0.32540227487192425, 0.409672836480374, 0.40142499301152, 0.3484888389725779, 0.4197705292000867, 0.3535683841865204], iterations=50)
+training error:
+0 error out of 5000 (0.0%)
+0 false positives
+0 false negatives
+classification took 1021.998 ms
+validation error:
+boosted classifier after 0 iterations:
+487 error out of 1000 (48.7%)
+487 false positives
+0 false negatives
+classification took 1.348 ms
+boosted classifier after 1 iterations:
+162 error out of 1000 (16.2%)
+123 false positives
+39 false negatives
+classification took 5.082 ms
+boosted classifier after 2 iterations:
+162 error out of 1000 (16.2%)
+123 false positives
+39 false negatives
+classification took 9.718 ms
+boosted classifier after 3 iterations:
+104 error out of 1000 (10.4%)
+57 false positives
+47 false negatives
+classification took 14.056 ms
+boosted classifier after 4 iterations:
+103 error out of 1000 (10.3%)
+71 false positives
+32 false negatives
+classification took 22.925 ms
+boosted classifier after 5 iterations:
+74 error out of 1000 (7.4%)
+53 false positives
+21 false negatives
+classification took 21.566 ms
+boosted classifier after 6 iterations:
+71 error out of 1000 (7.1%)
+55 false positives
+16 false negatives
+classification took 25.931 ms
+boosted classifier after 7 iterations:
+59 error out of 1000 (5.9%)
+38 false positives
+21 false negatives
+classification took 36.978 ms
+boosted classifier after 8 iterations:
+60 error out of 1000 (6.0%)
+43 false positives
+17 false negatives
+classification took 34.288 ms
+boosted classifier after 9 iterations:
+50 error out of 1000 (5.0%)
+33 false positives
+17 false negatives
+classification took 36.966 ms
+boosted classifier after 10 iterations:
+57 error out of 1000 (5.7%)
+33 false positives
+24 false negatives
+classification took 43.726 ms
+boosted classifier after 11 iterations:
+52 error out of 1000 (5.2%)
+37 false positives
+15 false negatives
+classification took 44.774 ms
+boosted classifier after 12 iterations:
+47 error out of 1000 (4.7%)
+31 false positives
+16 false negatives
+classification took 46.314 ms
+boosted classifier after 13 iterations:
+40 error out of 1000 (4.0%)
+21 false positives
+19 false negatives
+classification took 46.834 ms
+boosted classifier after 14 iterations:
+40 error out of 1000 (4.0%)
+25 false positives
+15 false negatives
+classification took 55.642 ms
+boosted classifier after 15 iterations:
+36 error out of 1000 (3.6%)
+25 false positives
+11 false negatives
+classification took 66.737 ms
+boosted classifier after 16 iterations:
+31 error out of 1000 (3.1%)
+17 false positives
+14 false negatives
+classification took 65.457 ms
+boosted classifier after 17 iterations:
+31 error out of 1000 (3.1%)
+22 false positives
+9 false negatives
+classification took 65.790 ms
+boosted classifier after 18 iterations:
+32 error out of 1000 (3.2%)
+18 false positives
+14 false negatives
+classification took 70.633 ms
+boosted classifier after 19 iterations:
+31 error out of 1000 (3.1%)
+22 false positives
+9 false negatives
+classification took 72.979 ms
+boosted classifier after 20 iterations:
+28 error out of 1000 (2.8%)
+19 false positives
+9 false negatives
+classification took 82.187 ms
+boosted classifier after 21 iterations:
+22 error out of 1000 (2.2%)
+13 false positives
+9 false negatives
+classification took 88.093 ms
+boosted classifier after 22 iterations:
+23 error out of 1000 (2.3%)
+16 false positives
+7 false negatives
+classification took 87.794 ms
+boosted classifier after 23 iterations:
+20 error out of 1000 (2.0%)
+13 false positives
+7 false negatives
+classification took 86.015 ms
+boosted classifier after 24 iterations:
+20 error out of 1000 (2.0%)
+12 false positives
+8 false negatives
+classification took 97.366 ms
+boosted classifier after 25 iterations:
+18 error out of 1000 (1.8%)
+10 false positives
+8 false negatives
+classification took 112.333 ms
+boosted classifier after 26 iterations:
+18 error out of 1000 (1.8%)
+9 false positives
+9 false negatives
+classification took 111.876 ms
+boosted classifier after 27 iterations:
+15 error out of 1000 (1.5%)
+9 false positives
+6 false negatives
+classification took 115.051 ms
+boosted classifier after 28 iterations:
+15 error out of 1000 (1.5%)
+6 false positives
+9 false negatives
+classification took 108.993 ms
+boosted classifier after 29 iterations:
+17 error out of 1000 (1.7%)
+10 false positives
+7 false negatives
+classification took 107.015 ms
+boosted classifier after 30 iterations:
+17 error out of 1000 (1.7%)
+13 false positives
+4 false negatives
+classification took 123.910 ms
+boosted classifier after 31 iterations:
+17 error out of 1000 (1.7%)
+12 false positives
+5 false negatives
+classification took 124.037 ms
+boosted classifier after 32 iterations:
+16 error out of 1000 (1.6%)
+10 false positives
+6 false negatives
+classification took 133.130 ms
+boosted classifier after 33 iterations:
+13 error out of 1000 (1.3%)
+8 false positives
+5 false negatives
+classification took 137.201 ms
+boosted classifier after 34 iterations:
+17 error out of 1000 (1.7%)
+13 false positives
+4 false negatives
+classification took 142.659 ms
+boosted classifier after 35 iterations:
+14 error out of 1000 (1.4%)
+9 false positives
+5 false negatives
+classification took 146.133 ms
+boosted classifier after 36 iterations:
+15 error out of 1000 (1.5%)
+11 false positives
+4 false negatives
+classification took 152.585 ms
+boosted classifier after 37 iterations:
+12 error out of 1000 (1.2%)
+8 false positives
+4 false negatives
+classification took 154.687 ms
+boosted classifier after 38 iterations:
+11 error out of 1000 (1.1%)
+7 false positives
+4 false negatives
+classification took 159.359 ms
+boosted classifier after 39 iterations:
+14 error out of 1000 (1.4%)
+8 false positives
+6 false negatives
+classification took 164.551 ms
+boosted classifier after 40 iterations:
+11 error out of 1000 (1.1%)
+7 false positives
+4 false negatives
+classification took 165.688 ms
+boosted classifier after 41 iterations:
+12 error out of 1000 (1.2%)
+7 false positives
+5 false negatives
+classification took 179.859 ms
+boosted classifier after 42 iterations:
+10 error out of 1000 (1.0%)
+6 false positives
+4 false negatives
+classification took 169.256 ms
+boosted classifier after 43 iterations:
+11 error out of 1000 (1.1%)
+7 false positives
+4 false negatives
+classification took 175.730 ms
+boosted classifier after 44 iterations:
+11 error out of 1000 (1.1%)
+7 false positives
+4 false negatives
+classification took 157.780 ms
+boosted classifier after 45 iterations:
+10 error out of 1000 (1.0%)
+6 false positives
+4 false negatives
+classification took 185.994 ms
+boosted classifier after 46 iterations:
+11 error out of 1000 (1.1%)
+5 false positives
+6 false negatives
+classification took 191.684 ms
+boosted classifier after 47 iterations:
+9 error out of 1000 (0.9%)
+5 false positives
+4 false negatives
+classification took 198.529 ms
+boosted classifier after 48 iterations:
+10 error out of 1000 (1.0%)
+5 false positives
+5 false negatives
+classification took 194.769 ms
+boosted classifier after 49 iterations:
+11 error out of 1000 (1.1%)
+6 false positives
+5 false negatives
+classification took 208.325 ms
+boosted classifier after 50 iterations:
+9 error out of 1000 (0.9%)
+5 false positives
+4 false negatives
+classification took 209.201 ms
