@@ -1,0 +1,55 @@
+I. Prerequisites:
+
+1. python2.7
+2. numpy
+3. python imaging library
+4. matplotlib (optional)
+
+This project comes with an optional C++ module that significantly
+accelerates training and classification. Compiling this module has
+additional prerequisites:
+
+1. GCC (if you want to compile with visual studios on windows,
+   you'll need to fiddle with setup.py)
+2. numpy headers (I believe this come with numpy by default?)
+3. python headers (apt-get install python-dev on debian/ubuntu)
+
+Compile the C++ module by running the script build.sh.
+
+Troubleshooting tip: If you have problem with errors during
+compilation and have a different version of GCC (I'm using 4.6.2)
+trying removing the -Wall and -Werror flags from setup.py.
+
+II. Running:
+
+driver.py is used to execute all functionality.
+
+python driver.py --help # for help
+
+Examples:
+
+# Run on tiny dataset.
+python driver.py
+
+# Same, but use c++ backend.
+python driver.py -c
+
+# Read in 3000 faces, 3000 non-faces. select 5000 for training and 1000 for validation.
+# Do boosting with 50 iterations. This will take hours.
+python driver.py -c -f 3000 -o 3000 -s 5000 -v 1000 -i 50 
+
+III. Saved Classifiers
+
+Training on large datasets can take quite a while, so I've prepared
+some classifiers pretrained on large datasets (5000 images).
+
+large_classifier.json
+new_classifier.json
+
+you can load these quickly and run them against a validation set with:
+
+python driver.py -c -f 3000 -o 3000 -v 6000 --load-classifier new_classifier.json
+
+This will be much faster than training a large dataset
+yourself. Loading all the faces into memory will still take a couple
+of minutes though.

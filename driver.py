@@ -53,7 +53,9 @@ def read_opts():
     parser.add_option("--save-plot-top-features", action="store_true", dest="plot_features",
                       help=("Saves visual representation of best features. Requires matplotlib."))
     parser.add_option("--search-image", dest="search_image",
-                      help="Search image for faces and output marked up file to search_out.png.",
+                      help="Search image for faces and output marked up file to search_out.png." +
+                      "Note that there will be many false positives in some images as we do not" +
+                      " implement the cascade.",
                       metavar="FILE")
 
     (options, args) = parser.parse_args()
