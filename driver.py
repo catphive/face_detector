@@ -1,10 +1,15 @@
 from optparse import OptionParser
 import random
+import Image
+import ImageDraw
+import time
+
 import faces
 import weak_classifier
 import boost
 import serializer
-import time
+import search
+
 
 try:
     import matplotlib
@@ -44,11 +49,18 @@ def read_opts():
                       help=("Show validation accuracy after each iteration of " +
                             "boosting, rather than just the final classifier. "))
     parser.add_option("--save-plot-iters", action="store_true", dest="plot_iters",
-                      help=("Used in conjunction with --each-iter. Requires matplotlib."))
+                      help=("Implies --each-iter. Requires matplotlib."))
     parser.add_option("--save-plot-top-features", action="store_true", dest="plot_features",
                       help=("Saves visual representation of best features. Requires matplotlib."))
+    parser.add_option("--search-image", dest="search_image",
+                      help="Search image for faces and output marked up file to search_out.png.",
+                      metavar="FILE")
 
     (options, args) = parser.parse_args()
+
+    if options.plot_iters:
+        options.each_iter = True
+
     return options
 
 def classify(classifier, data):
@@ -100,13 +112,36 @@ def plot_perf(perf_data):
     plt.clf()
     plt.cla()
 
+def scale(coord, factor):
+    return (coord[0] * factor, coord[1] * factor)
+
 def plot_features(classifier, feature_descriptors):
-    for base_h in classifier.base_h[:4]:
+    factor = 10
+    img = Image.open("Face16/c000002.bmp")
+    img = img.convert("RGB")
+    img = img.resize(scale(img.size, factor))
+    draw = ImageDraw.Draw(img)
+    
+    colors = ["red", "green", "blue", "orange"]
+
+    def cvt(coord):
+        return (coord[1], coord[0])
+
+    for base_h in classifier.base_h[:10]:
+        print base_h
         print feature_descriptors[base_h.f_idx]
+        feature_func_idx, start, end = feature_descriptors[base_h.f_idx]
+        start = cvt(start)
+        end = cvt(end)
+
+        draw.rectangle([scale(start, factor), scale(end, factor)],
+                       outline=colors[feature_func_idx])
+    
+    img.save("features_plot.png")
 
 def classify_with_all_iterations(classifier, data, do_plot):
     results = []
-    for iters in xrange(classifier.iterations + 1):
+    for iters in xrange(1, classifier.iterations + 1):
         print "boosted classifier after %d iterations:" % iters
         # Reconstruct classifier at earlier iterations.
         cls = boost.BoostClassifier(base_h=classifier.base_h[:iters],
@@ -147,6 +182,9 @@ def main():
             classifier = serializer.load(in_file)
     else:
         print "training boosted classifier..."
+        if not train_data:
+            print "specify some training data with the -s flag."
+            exit(1)
         classifier = boost.train_classifier(train_data, opts.num_iterations)
         print classifier
 
@@ -163,6 +201,9 @@ def main():
 
     if opts.plot_features:
         plot_features(classifier, feature_descriptors)
+
+    if opts.search_image:
+        search.search(classifier, opts.search_image, feature_descriptors, opts.c_backend)
 
     if opts.save_classifier:
         with open(opts.save_classifier, "w") as out_file:
