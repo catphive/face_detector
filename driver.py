@@ -127,9 +127,7 @@ def plot_features(classifier, feature_descriptors):
     def cvt(coord):
         return (coord[1], coord[0])
 
-    for base_h in classifier.base_h[:10]:
-        print base_h
-        print feature_descriptors[base_h.f_idx]
+    for base_h in classifier.base_h[:4]:
         feature_func_idx, start, end = feature_descriptors[base_h.f_idx]
         start = cvt(start)
         end = cvt(end)
