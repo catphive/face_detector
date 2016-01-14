@@ -1,4 +1,15 @@
-I. Prerequisites:
+I. Background
+
+This is my implementation of a face detector based on the paper
+published by Viola and Jones in 2001 entitled Rapid Object Detection
+using a Boosted Cascade of Simple Features.
+
+Original paper:
+https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf
+Wikipedia:
+https://en.wikipedia.org/wiki/Viola%E2%80%93Jones_object_detection_framework
+
+II. Prerequisites:
 
 1. python2.7
 2. numpy
@@ -20,7 +31,7 @@ Troubleshooting tip: If you have problem with errors during
 compilation and have a different version of GCC (I'm using 4.6.2)
 trying removing the -Wall and -Werror flags from setup.py.
 
-II. Running:
+III. Running:
 
 driver.py is used to execute all functionality.
 
@@ -38,7 +49,7 @@ python driver.py -c
 # Do boosting with 50 iterations. This will take hours.
 python driver.py -c -f 3000 -o 3000 -s 5000 -v 1000 -i 50 
 
-III. Saved Classifiers
+IV. Saved Classifiers
 
 Training on large datasets can take quite a while, so I've prepared
 some classifiers pretrained on large datasets (5000 images).
